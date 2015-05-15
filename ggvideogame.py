@@ -11,39 +11,41 @@ MAX_GROUPS = {
     'stick2': 100,
     'panel': 4,
 }
+LIMITS = {
+    'x': 30,
+    'y': 20,
+    'hue': 1,
+    'brightness': 1,
+}
 
 def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
-                stick1 = None, stick2 = None, panel = None):
+                panel = None, stick1 = None, stick2 = None):
     '''
     :param pandas.DataFrame df: Dataset
+
+    x, y, hue, and brightness must be numeric columns.
+    panel, stick1, and stick2 must have an order.
 
     Everything else is either a column name (a key in the dictionaries)
     or None.
     '''
 
     # Determine limits.
-    for aesthetic
+    def frame(panel_value, stick1_value, stick2_value, limits = LIMITS):
+        '''
+        Subset the particular frame. Use None to get everything.
+        '''
+        # Select the data for a particular facet.
+        selector = True
+        factor_levels = [(panel, panel_value), (stick1, stick1_value), (stick2, stick2_value)]
+        for factor, level in factor_levels:
+            if level:
+                selector = selector & (df[factor] == level)
+        
+        return {colname: scale(df[colname],
+                               df[selector][colname],
+                               LIMITS[colname]) for colname in LIMITS.keys()}
 
-    # Select the data for a particular facet.
-    selector = True
-    for factor, level in [('stick1', stick1), ('stick2', stick2), ('panel', panel)]:
-        if level:
-            selector = selector & (df[factor] == level)
-
-def build_canvas(data, **kwargs):
-    canvas = collections.defaultdict(list)
-    for group in groups(data, kwargs['stick1'], kwargs['stick2'], kwargs['panel']):
-        stick1, stick2, panel = group
-        wheres = {
-            kwargs['stick1']: stick1,
-            kwargs['stick2']: stick2,
-            kwargs['panel']: panel,
-        }
-        local_data = list(subset(data, wheres))
-        local_canvas = {}
-        for aesthetic in ['x', 'y', 'hue', 'brightness']:
-            default = DEFAULT_AESTHETICS[aesthetic]
-            local_canvas[aesthetic] = list(column(local_data, kwargs[aesthetic], default))
-
-        canvas[group].append(local_canvas)
-    return dict(canvas)
+def scale(column, subcolumn, n):
+    normalized = (subcolumn - column.min()) / (column.max() - column.min())
+    return (normalized * (n - 1)).round()
