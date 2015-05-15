@@ -7,7 +7,7 @@ DEFAULT_AESTHETICS = {
     'brightness': 0.5,
 }
 MAX_GROUPS = {
-    'stick1': 50,
+    'stick1': 100,
     'stick2': 100,
     'panel': 4,
 }
@@ -37,14 +37,20 @@ def build_canvas(data, **kwargs):
 #def build_frame(data, facet_key, facet_value
 
 def subset(data, key, value):
-    return (row for row in data if row[key] == value)
+    if value == None:
+        return data
+    else:
+        return (row for row in data if row[key] == value)
 
 def groups(data, key, max_groups):
     'Get groups for faceting.'
-    groups = set(row[key] for row in data)
-    if len(groups) > max_groups:
-        raise ValueError('Too many groups for the %s facet' % key)
-    return sorted(groups)
+    if key:
+        groups = set(row[key] for row in data)
+        if len(groups) > max_groups:
+            raise ValueError('Too many groups for the %s facet' % key)
+        return sorted(groups)
+    else:
+        return [None]
 
 def column(data, key, default):
     if key:
