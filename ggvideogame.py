@@ -3,6 +3,7 @@ import collections
 
 import pandas
 
+MAX_PANELS = 6
 DEFAULTS = {
     'x': 0, 'y': 0,
     'hue': None,
@@ -16,7 +17,7 @@ LIMITS = {
 }
 
 def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
-                panel = None, stick1 = None, stick2 = None):
+                panel = None, stick1 = None, stick2 = None, _return_frame = False):
     '''
     :param pandas.DataFrame df: Dataset
 
@@ -53,6 +54,7 @@ def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
             default_column = list(itertools.repeat(defaults[aesthetic], selector.sum()))
             df_subset[aesthetic] = pandas.Series(default_column)
 
+        # Not defaults
         for aesthetic in limits.keys():
             if aesthetics[aesthetic]:
                 df_subset[aesthetic] = scale(df[aesthetics[aesthetic]],
@@ -61,7 +63,26 @@ def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
 
         return df_subset
     
-    return frame
+    if _return_frame:
+        return frame
+
+    while True:
+        stick1_value, stick2_value = read_sticks()
+        for i, panel in enumerate(list(df[panel].unique())):
+            if i > MAX_PANELS:
+                raise ValueError('Too many panels')
+            frame_df = frame(panel_value, stick1_value, stick2_value)
+            render(i, frame_df)
+
+def read_sticks(): 
+    '''
+    Return only on change.
+    '''
+
+def render(panel_number, df):
+    '''
+    Render the data frame to the panel.
+    '''
 
 def scale(column, subcolumn, n):
     normalized = (subcolumn - column.min()) / (column.max() - column.min())
