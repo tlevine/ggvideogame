@@ -12,52 +12,38 @@ MAX_GROUPS = {
     'panel': 4,
 }
 
-def ggvideogame(data, x = None, y = None, hue = None, brightness = None,
+def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
                 stick1 = None, stick2 = None, panel = None):
     '''
-    :param list data: Dataset, a list of dictionaries
+    :param pandas.DataFrame df: Dataset
 
     Everything else is either a column name (a key in the dictionaries)
     or None.
     '''
 
+    # Determine limits.
+    for aesthetic
+
+    # Select the data for a particular facet.
+    selector = True
+    for factor, level in [('stick1', stick1), ('stick2', stick2), ('panel', panel)]:
+        if level:
+            selector = selector & (df[factor] == level)
+
 def build_canvas(data, **kwargs):
     canvas = collections.defaultdict(list)
-    for facet in ['stick1', 'stick2', 'panel']:
-        for group in groups(data, kwargs[facet], MAX_GROUPS[facet]):
-            local_canvas = {}
-            local_data = list(subset(data, kwargs[facet], group))
-            for aesthetic in ['x', 'y', 'hue', 'brightness']:
-                default = DEFAULT_AESTHETICS[aesthetic]
-                local_canvas[aesthetic] = list(column(local_data, kwargs[aesthetic], default))
+    for group in groups(data, kwargs['stick1'], kwargs['stick2'], kwargs['panel']):
+        stick1, stick2, panel = group
+        wheres = {
+            kwargs['stick1']: stick1,
+            kwargs['stick2']: stick2,
+            kwargs['panel']: panel,
+        }
+        local_data = list(subset(data, wheres))
+        local_canvas = {}
+        for aesthetic in ['x', 'y', 'hue', 'brightness']:
+            default = DEFAULT_AESTHETICS[aesthetic]
+            local_canvas[aesthetic] = list(column(local_data, kwargs[aesthetic], default))
 
-            canvas[facet].append(local_canvas)
+        canvas[group].append(local_canvas)
     return dict(canvas)
-
-#def build_frame(data, facet_key, facet_value
-
-def subset(data, key, value):
-    if value == None:
-        return data
-    else:
-        return (row for row in data if row[key] == value)
-
-def groups(data, key, max_groups):
-    'Get groups for faceting.'
-    if key:
-        groups = set(row[key] for row in data)
-        if len(groups) > max_groups:
-            raise ValueError('Too many groups for the %s facet' % key)
-        return sorted(groups)
-    else:
-        return [None]
-
-def column(data, key, default):
-    if key:
-        return (row[key] for row in data)
-    else:
-        return itertools.repeat(default, len(data))
-
-
-# data = list(csv.DictReader(open('../maluku/data/voyages.csv')))
-# build_canvas(data, x = 'Tonnage', y = 'Tonnage', hue = None, brightness = None, stick1 = 'Place of departure', stick2 = 'Place of arrival', panel = 'Yard')
