@@ -29,10 +29,10 @@ def build_canvas(data, **kwargs):
             local_data = list(subset(data, kwargs[facet], group))
             for aesthetic in ['x', 'y', 'hue', 'brightness']:
                 default = DEFAULT_AESTHETICS[aesthetic]
-                local_canvas[aesthetic] = column(local_data, kwargs[aesthetic], default)
+                local_canvas[aesthetic] = list(column(local_data, kwargs[aesthetic], default))
 
             canvas[facet].append(local_canvas)
-    return canvas
+    return dict(canvas)
 
 #def build_frame(data, facet_key, facet_value
 
