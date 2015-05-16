@@ -68,8 +68,9 @@ def render(screen, i, frame_df):
     Render the data frame to the panel.
     '''
 
-    origin = panel_x(i), PANEL_Y
-    screen.set_at(origin, (0, 0, 255))
+    x_0, y_0 = panel_x(i), PANEL_Y
+    for point in zip(frame_df['x'] + x_0, frame_df['y'] + y_0):
+        screen.set_at(point, (0, 0, 255))
 
 def build_frame(df, x, y, hue, brightness, panel, stick1, stick2):
     aesthetics = {
