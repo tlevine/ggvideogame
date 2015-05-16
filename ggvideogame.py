@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+import re
 import itertools
 import collections
 
@@ -29,8 +30,15 @@ LIMITS = {
 def example():
     df = pandas.io.parsers.read_csv('~/git/maluku/data/voyages.csv')
     df = df[(df['Yard'] == 'Amsterdam') | (df['Yard'] == 'Zeeland')]
+    df = df[-df['Tonnage'].isnull()]
 
-    ggvideogame(df, panel = 'Yard')
+    def to_int(x):
+        m = re.match(r'[^\d]*(\d+).*', x)
+        if m:
+            return m.group(1)
+    df['Tonnage'] = df['Tonnage'].apply(to_int).astype(int)
+
+    ggvideogame(df, panel = 'Yard', x = 'Tonnage')
 
 def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
                 x = None, y = None, hue = None, brightness = None,
