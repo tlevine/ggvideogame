@@ -62,7 +62,7 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
             render(screen, i, frame_df)
 
         simulated_display.update(screen)
-        led_display.update(screen)
+      # led_display.update(screen)
 
         break
 
