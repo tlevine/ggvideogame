@@ -12,3 +12,5 @@ Aesthetics
 * Size, maybe
 
 One can have four (?) facets, arranged in a line.
+
+pygame apparently requires Python 2, so this does as well.

@@ -1,9 +1,18 @@
 import itertools
 import collections
 
+import pygame, led
 import pandas
 
-MAX_PANELS = 6
+PANEL_WIDTH = 20
+PANEL_HEIGHT = 20
+PANEL_Y = 0
+def panel_x(panel_number):
+    '''
+    Panel number starts at 0.
+    '''
+    return 1 + (panel_number * (2 + PANEL_WIDTH))
+
 DEFAULTS = {
     'x': 0, 'y': 0,
     'hue': None,
@@ -16,7 +25,14 @@ LIMITS = {
     'brightness': 1,
 }
 
-def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
+def example():
+    df = pandas.io.parsers.read_csv('~/git/maluku/data/voyages.csv')
+    df = df[(df['Yard'] == 'Amsterdam') | (df['Yard'] == 'Zeeland')]
+
+    ggvideogame(df, panel = 'Yard')
+
+def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
+                x = None, y = None, hue = None, brightness = None,
                 panel = None, stick1 = None, stick2 = None, _return_frame = False):
     '''
     :param pandas.DataFrame df: Dataset
@@ -27,7 +43,30 @@ def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
     Everything else is either a column name (a key in the dictionaries)
     or None.
     '''
+    led_display = led.teensy.TeensyDisplay(serial_port, fallback_size)
+    size = led_display.size()
+    simulated_display = led.sim.SimDisplay(size)
+    screen = pygame.Surface(size)
+    while True:
+       #stick1_value, stick2_value = read_sticks()
+        stick1_value = stick2_value = None
+        for i, panel in enumerate(list(df[panel].unique())):
+            if i > MAX_PANELS:
+                raise ValueError('Too many panels')
+            frame_df = frame(panel_value, stick1_value, stick2_value)
+            render(screen, i, frame_df)
 
+        simDisplay.update(screen)
+        ledDisplay.update(screen)
+
+        break
+
+def render(screen, i, frame_df):
+    origin = panel_x(i), PANEL_Y
+    screen.set_at(origin, (0, 0, 255))
+
+def build_frame(df, x = None, y = None, hue = None, brightness = None,
+                panel = None, stick1 = None, stick2 = None, _return_frame = False):
     aesthetics = {
         'x': x,
         'y': y,
@@ -60,19 +99,8 @@ def ggvideogame(df, x = None, y = None, hue = None, brightness = None,
                 df_subset[aesthetic] = scale(df[aesthetics[aesthetic]],
                                              df[selector][aesthetics[aesthetic]],
                                              limits[aesthetic])
-
         return df_subset
-    
-    if _return_frame:
-        return frame
-
-    while True:
-        stick1_value, stick2_value = read_sticks()
-        for i, panel in enumerate(list(df[panel].unique())):
-            if i > MAX_PANELS:
-                raise ValueError('Too many panels')
-            frame_df = frame(panel_value, stick1_value, stick2_value)
-            render(i, frame_df)
+    return frame
 
 def read_sticks(): 
     '''
