@@ -61,12 +61,16 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
             frame_df = frame(panel_value, stick1_value, stick2_value)
             render(screen, i, frame_df)
 
-        simDisplay.update(screen)
-        ledDisplay.update(screen)
+        simulated_display.update(screen)
+        led_display.update(screen)
 
         break
 
 def render(screen, i, frame_df):
+    '''
+    Render the data frame to the panel.
+    '''
+
     origin = panel_x(i), PANEL_Y
     screen.set_at(origin, (0, 0, 255))
 
@@ -109,11 +113,6 @@ def build_frame(df, x, y, hue, brightness, panel, stick1, stick2):
 def read_sticks(): 
     '''
     Return only on change.
-    '''
-
-def render(panel_number, df):
-    '''
-    Render the data frame to the panel.
     '''
 
 def scale(column, subcolumn, n):
