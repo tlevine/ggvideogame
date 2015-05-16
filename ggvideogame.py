@@ -55,7 +55,7 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
     while True:
        #stick1_value, stick2_value = read_sticks()
         stick1_value = stick2_value = None
-        for i, panel in enumerate(list(df[panel].unique())):
+        for i, panel_value in enumerate(list(df[panel].unique())):
             if i > max_panels:
                 raise ValueError('Too many panels')
             frame_df = frame(panel_value, stick1_value, stick2_value)
