@@ -53,8 +53,7 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
     frame = build_frame(df, x, y, hue, brightness, panel, stick1, stick2)
 
     while True:
-       #stick1_value, stick2_value = read_sticks()
-        stick1_value = stick2_value = None
+        stick1_value, stick2_value = read_sticks()
         for i, panel_value in enumerate(list(df[panel].unique())):
             if i > max_panels:
                 raise ValueError('Too many panels')
@@ -62,9 +61,7 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
             render(screen, i, frame_df)
 
         simulated_display.update(screen)
-      # led_display.update(screen)
-
-        break
+        led_display.update(screen)
 
 def render(screen, i, frame_df):
     '''
@@ -114,6 +111,9 @@ def read_sticks():
     '''
     Return only on change.
     '''
+    import time
+    time.sleep(1)
+    return None, None
 
 def scale(column, subcolumn, n):
     normalized = (subcolumn - column.min()) / (column.max() - column.min())
