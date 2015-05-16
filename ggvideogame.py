@@ -49,6 +49,9 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
     max_panels = size[0] / PANEL_WIDTH # These are ints, so they round down.
     simulated_display = led.sim.SimDisplay(size)
     screen = pygame.Surface(size)
+
+    frame = build_frame(df, x, y, hue, brightness, panel, stick1, stick2)
+
     while True:
        #stick1_value, stick2_value = read_sticks()
         stick1_value = stick2_value = None
@@ -67,8 +70,7 @@ def render(screen, i, frame_df):
     origin = panel_x(i), PANEL_Y
     screen.set_at(origin, (0, 0, 255))
 
-def build_frame(df, x = None, y = None, hue = None, brightness = None,
-                panel = None, stick1 = None, stick2 = None, _return_frame = False):
+def build_frame(df, x, y, hue, brightness, panel, stick1, stick2):
     aesthetics = {
         'x': x,
         'y': y,
