@@ -115,3 +115,6 @@ def render(panel_number, df):
 def scale(column, subcolumn, n):
     normalized = (subcolumn - column.min()) / (column.max() - column.min())
     return (normalized * (n - 1)).round()
+
+if __name__ == '__main__':
+    example()
