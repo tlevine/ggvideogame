@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import itertools
 import collections
 
@@ -45,13 +46,14 @@ def ggvideogame(df, serial_port = None, fallback_size = (90, 20),
     '''
     led_display = led.teensy.TeensyDisplay(serial_port, fallback_size)
     size = led_display.size()
+    max_panels = size[0] / PANEL_WIDTH # These are ints, so they round down.
     simulated_display = led.sim.SimDisplay(size)
     screen = pygame.Surface(size)
     while True:
        #stick1_value, stick2_value = read_sticks()
         stick1_value = stick2_value = None
         for i, panel in enumerate(list(df[panel].unique())):
-            if i > MAX_PANELS:
+            if i > max_panels:
                 raise ValueError('Too many panels')
             frame_df = frame(panel_value, stick1_value, stick2_value)
             render(screen, i, frame_df)
